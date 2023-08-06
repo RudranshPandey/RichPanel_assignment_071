@@ -1,27 +1,32 @@
- {% load static %}
+console.log("Sanity Check!");
 
-    /***** for pricing table (tabs | monthly & yearly) ******/
-    $(document).ready(function() {
-            $("#monthly").click(function(){
-                    $(this).addClass('active');
-                    $("#yearly").removeClass('active')
+// Get Stripe publishable key
+fetch("/config/")
+  .then((result) => result.json())
+  .then((data) => {
+    // Initialize Stripe.js
+    const stripe = Stripe(data.publicKey);
 
-                    $(".monthlyPriceList").removeClass('d-none');
-                    $(".monthlyPriceList").addClass('fadeIn');
-                    $(".yearlyPriceList").addClass('d-none');
+    // new
 
-                    $(".indicator").css("left","2px");
-            })
+    // Event Handler
+    let submitBtn = document.querySelector("#submitBtn");
+    if (submitBtn != null) {
+      submitBtn.addEventListener("click", () => {
+        // Get Checkout Session ID
+        fetch("/create-checkout-session/")
+          .then((result) => {
+            return result.json();
+          })
+          .then((data) => {
+            console.log(data);
 
-            $("#yearly").click(function(){
-                    $(this).addClass('active');
-                    $("#monthly").removeClass('active');
-
-                    $(".yearlyPriceList").removeClass('d-none');
-                    $(".yearlyPriceList").addClass('fadeIn');
-                    $(".monthlyPriceList").addClass('d-none');
-
-                    $(".indicator").css("left","163px");
-            })
-    })
-    /***** for pricing table (tabs | monthly & yearly) ******/
+            // Redirect to Stripe Checkout
+            return stripe.redirectToCheckout({ sessionId: data.sessionId });
+          })
+          .catch((res) => {
+            console.log(res);
+          });
+      });
+    }
+  });

@@ -121,6 +121,27 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+from .local_settings import *
+
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in django admin, regardless of "allauth"
+    "django.contrib.auth.backends.ModelBackend",
+
+    # "allauth" specific authentication methods, such as login by email
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+
+# We have to set this variable to enable "django.contrib.sites"
+SITE_ID = 1
+
+# User will be redirected to this page after logging in
+LOGIN_REDIRECT_URL= "/"
+
+# If you don't have an email server running yet add this line to avoid any possible errors
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+STATIC_URL = "/static/"
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
